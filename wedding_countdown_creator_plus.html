@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Wedding Countdown Creator</title>
+<style>
+:root{--paper:#f6f1e8;--ink:#34352f;--accent:#7c8967;--card:#fffdf9}
+*{box-sizing:border-box}body{margin:0;padding:24px;background:var(--paper);color:var(--ink);font-family:Georgia,serif;min-height:100vh;display:grid;place-items:center}
+main{width:min(760px,100%);padding:clamp(24px,5vw,48px);background:var(--card);border:1px solid #ded6c8;box-shadow:0 12px 36px #0000000a}
+h1{text-align:center;font-size:clamp(30px,5vw,44px);font-weight:400;margin:0 0 8px}#subtitle{text-align:center;color:#777;margin:0 0 28px}
+label{display:block;margin:16px 0 7px;font:13px Arial,sans-serif;letter-spacing:.2px}
+input,select{width:100%;padding:12px;border:1px solid #d5cec2;background:white;color:#333;font:15px Arial,sans-serif;border-radius:2px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.btn{padding:13px 18px;border:0;background:var(--accent);color:white;font:13px Arial,sans-serif;letter-spacing:.3px;cursor:pointer;margin-top:22px}.btn:hover{filter:brightness(.93)}
+#preview{margin-top:30px;padding:22px 10px;border-top:1px solid #e5dfd4;text-align:center}
+#previewTitle{font-size:clamp(22px,4vw,30px);font-weight:400;margin:0 0 20px}
+#timer{display:flex;justify-content:center;gap:clamp(10px,3vw,24px);flex-wrap:wrap}.unit{min-width:65px}.num{font:clamp(24px,4vw,36px) Arial,sans-serif}.lbl{font:10px Arial,sans-serif;letter-spacing:1.4px;color:#777;margin-top:5px}
+#result{display:none;margin-top:20px;padding:16px;background:#f3efe7;font:13px Arial,sans-serif;overflow-wrap:anywhere}#link{display:block;margin:10px 0;color:#526246}#copy{margin-top:5px;background:#34352f}.note{font:12px/1.5 Arial,sans-serif;color:#777;margin-top:18px}
+@media(max-width:520px){.row{grid-template-columns:1fr}}
+</style></head>
+<body><main>
+<h1>Wedding Countdown Creator</h1><p id="subtitle">Create a countdown for your wedding day.</p>
+<label for="title">Countdown title</label><input id="title" value="The Wedding Day">
+<div class="row"><div><label for="date">Wedding date</label><input id="date" type="date" required></div><div><label for="time">Wedding time</label><input id="time" type="time" value="16:00"></div></div>
+<label for="tz">Time zone</label><select id="tz"><option value="Europe/Istanbul">Europe/Istanbul</option><option value="Europe/London">Europe/London</option><option value="Europe/Paris">Europe/Paris</option><option value="America/New_York">America/New_York</option><option value="America/Los_Angeles">America/Los_Angeles</option><option value="Australia/Sydney">Australia/Sydney</option></select>
+<div class="row"><div><label for="font">Font style</label><select id="font"><option value="Georgia,serif">Elegant Serif</option><option value="'Times New Roman',serif">Classic Times</option><option value="Arial,sans-serif">Modern Sans Serif</option><option value="'Trebuchet MS',sans-serif">Clean Contemporary</option><option value="cursive">Romantic Script (system font)</option></select></div><div><label for="layout">Countdown style</label><select id="layout"><option value="editorial">Editorial</option><option value="minimal">Minimal</option><option value="boxed">Boxed</option></select></div></div>
+<div class="row"><div><label for="color">Text color</label><input id="color" type="color" value="#34352f"></div><div><label for="accent">Accent color</label><input id="accent" type="color" value="#7c8967"></div></div>
+<label for="background">Background color</label><input id="background" type="color" value="#f6f1e8">
+<button class="btn" id="create">Create my countdown link</button>
+<section id="preview"><h2 id="previewTitle">The Wedding Day</h2><div id="timer"><div class="unit"><div class="num">00</div><div class="lbl">DAYS</div></div><div class="unit"><div class="num">00</div><div class="lbl">HOURS</div></div><div class="unit"><div class="num">00</div><div class="lbl">MINUTES</div></div><div class="unit"><div class="num">00</div><div class="lbl">SECONDS</div></div></div></section>
+<div id="result"><strong>Your countdown link</strong><a id="link" target="_blank" rel="noopener"></a><button class="btn" id="copy">Copy link</button><p class="note">This link works when this HTML file is hosted on a public HTTPS website. A local file link is not a public link, and Canva may only embed URLs from sources it supports.</p></div>
+</main>
+<script>
+const $=id=>document.getElementById(id);let target=null,iv=null;
+function applyStyle(){document.documentElement.style.setProperty('--ink',$('color').value);document.documentElement.style.setProperty('--accent',$('accent').value);document.documentElement.style.setProperty('--paper',$('background').value);$('previewTitle').style.fontFamily=$('font').value;let s=$('layout').value;document.getElementById('preview').style.borderTop=s==='minimal'?'0': '1px solid #e5dfd4';document.getElementById('preview').style.background=s==='boxed'?'#ffffff':'transparent';document.getElementById('preview').style.border=s==='boxed'?'1px solid #ded6c8':'0';document.getElementById('preview').style.padding=s==='minimal'?'12px 10px':'22px 10px';}
+function buildUrl(){const u=new URL(location.href);u.search='';['date','time','tz','title','font','layout','color','accent','background'].forEach(k=>u.searchParams.set(k,$(k).value));return u.href}
+function draw(){if(target===null)return;let d=Math.max(0,target-Date.now()),v=[Math.floor(d/86400000),Math.floor(d%86400000/3600000),Math.floor(d%3600000/60000),Math.floor(d%60000/1000)];$('timer').innerHTML=v.map((n,i)=>`<div class="unit"><div class="num">${String(n).padStart(2,'0')}</div><div class="lbl">${['DAYS','HOURS','MINUTES','SECONDS'][i]}</div></div>`).join('')}
+function make(){if(!$('date').value){alert('Please choose the wedding date.');return}target=new Date($('date').value+'T'+($('time').value||'00:00')+':00').getTime();$('previewTitle').textContent=$('title').value||'The Wedding Day';applyStyle();$('result').style.display='block';$('link').href=buildUrl();$('link').textContent=buildUrl();draw();if(iv)clearInterval(iv);iv=setInterval(draw,1000)}
+['title','font','layout','color','accent','background'].forEach(k=>$(k).addEventListener('input',()=>{ $('previewTitle').textContent=$('title').value||'The Wedding Day';applyStyle()}));
+$('create').addEventListener('click',make);$('copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('link').href);$('copy').textContent='Copied!'}catch(e){prompt('Copy this link',$('link').href)}});
+const q=new URLSearchParams(location.search);['date','time','tz','title','font','layout','color','accent','background'].forEach(k=>{if(q.has(k))$(k).value=q.get(k)});applyStyle();if(q.has('date'))make();
+</script></body></html>
