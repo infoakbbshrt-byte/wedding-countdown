@@ -1,38 +1,71 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Wedding Countdown Creator</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Wedding Countdown</title>
 <style>
-:root{--paper:#f6f1e8;--ink:#3b211c;--accent:#7c8967;--card:#fffdf9}
-*{box-sizing:border-box}body{margin:0;padding:24px;background:var(--paper);color:var(--ink);font-family:Georgia,serif;min-height:100vh;display:grid;place-items:center}
+:root{--ink:#3b211c;--paper:#f6f1e8;--card:#fffdf9}
+*{box-sizing:border-box}
+body{margin:0;padding:24px;background:var(--paper);color:var(--ink);font-family:Georgia,serif;min-height:100vh;display:grid;place-items:center}
 main{width:min(760px,100%);padding:clamp(24px,5vw,48px);background:var(--card);border:1px solid #ded6c8;box-shadow:0 12px 36px #0000000a}
-h1{text-align:center;font-size:clamp(30px,5vw,44px);font-weight:400;margin:0 0 8px}#subtitle{text-align:center;color:#777;margin:0 0 28px}
+h1{text-align:center;font-size:clamp(30px,5vw,44px);font-weight:400;margin:0 0 8px}
+#subtitle{text-align:center;color:#777;margin:0 0 28px}
 label{display:block;margin:16px 0 7px;font:13px Arial,sans-serif;letter-spacing:.2px}
 input,select{width:100%;padding:12px;border:1px solid #d5cec2;background:white;color:#333;font:15px Arial,sans-serif;border-radius:2px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.btn{padding:13px 18px;border:0;background:var(--accent);color:white;font:13px Arial,sans-serif;letter-spacing:.3px;cursor:pointer;margin-top:22px}.btn:hover{filter:brightness(.93)}
-#preview{margin-top:30px;padding:22px 10px;border-top:1px solid #e5dfd4;text-align:center}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.btn{padding:13px 18px;border:0;background:#7c8967;color:white;font:13px Arial,sans-serif;letter-spacing:.3px;cursor:pointer;margin-top:22px}
+#preview{margin-top:30px;padding:22px 10px;text-align:center}
 #previewTitle{font-size:clamp(22px,4vw,30px);font-weight:400;margin:0 0 20px}
-#timer{display:flex;justify-content:center;gap:clamp(10px,3vw,24px);flex-wrap:wrap}.unit{min-width:65px}.num{font:clamp(24px,4vw,36px) Georgia,serif;color:var(--ink)}.lbl{font:9px Georgia,serif;letter-spacing:.4px;color:var(--ink);margin-top:3px}.sep{font:clamp(20px,3vw,30px) Georgia,serif;color:#999;margin-top:0}.unit{min-width:48px}
-#result{display:none;margin-top:20px;padding:16px;background:#f3efe7;font:13px Arial,sans-serif;overflow-wrap:anywhere}#link{display:block;margin:10px 0;color:#526246}#copy{margin-top:5px;background:#34352f}.note{font:12px/1.5 Arial,sans-serif;color:#777;margin-top:18px}
-@media(max-width:520px){.row{grid-template-columns:1fr}}
+#timer{display:flex;justify-content:center;align-items:flex-start;gap:clamp(8px,2.5vw,24px);flex-wrap:nowrap}
+.unit{min-width:0;text-align:center}
+.num{font:clamp(26px,6vw,56px) Georgia,serif;line-height:1.05;color:var(--ink);white-space:nowrap}
+.lbl{font:clamp(8px,1.3vw,11px) Georgia,serif;letter-spacing:.4px;color:var(--ink);margin-top:5px}
+.sep{font:clamp(22px,4vw,40px) Georgia,serif;color:#999;line-height:1}
+#result{display:none;margin-top:20px;padding:16px;background:#f3efe7;font:13px Arial,sans-serif;overflow-wrap:anywhere}
+#link{display:block;margin:10px 0;color:#526246}
+.note{font:12px/1.5 Arial,sans-serif;color:#777;margin-top:18px}
+@media(max-width:520px){body{padding:12px}.row{grid-template-columns:1fr}#timer{gap:7px}.num{font-size:clamp(22px,7vw,38px)}.sep{font-size:22px}.lbl{font-size:8px}}
+/* Published countdown view: truly transparent canvas, no card, no outer padding or branding. */
+html.countdown-view,html.countdown-view body{background:transparent!important}
+body.countdown-view{display:block;min-height:0;width:100%;height:100%;padding:0;margin:0;overflow:hidden}
+body.countdown-view main{width:100%;max-width:none;margin:0;padding:12px 8px;background:transparent!important;border:0!important;box-shadow:none!important}
+body.countdown-view #preview{margin:0;padding:8px 0;background:transparent!important;border:0!important}
+body.countdown-view #previewTitle{font-size:clamp(18px,4vw,36px);margin:0 0 18px}
+body.countdown-view .num{font-size:clamp(26px,7vw,64px)}
+body.countdown-view .lbl{font-size:clamp(8px,1.4vw,12px)}
+body.countdown-view .sep{font-size:clamp(22px,4vw,42px)}
+body.countdown-view #creator,body.countdown-view #result{display:none!important}
 </style></head>
 <body><main>
+<section id="creator">
 <h1>Wedding Countdown Creator</h1><p id="subtitle">Create a countdown for your wedding day.</p>
-<label for="title">Countdown title (optional)</label><input id="title" value="The Wedding Day"><label style="display:flex;align-items:center;gap:8px"><input id="showTitle" type="checkbox" style="width:auto"> Show title above countdown</label>
+<label for="title">Countdown title (optional)</label><input id="title" value="The Wedding Day">
+<label style="display:flex;align-items:center;gap:8px"><input id="showTitle" type="checkbox" style="width:auto"> Show title above countdown</label>
 <div class="row"><div><label for="date">Wedding date</label><input id="date" type="date" required></div><div><label for="time">Wedding time</label><input id="time" type="time" value="16:00"></div></div>
 <label for="tz">Time zone</label><select id="tz"><option value="Europe/Istanbul">Europe/Istanbul</option><option value="Europe/London">Europe/London</option><option value="Europe/Paris">Europe/Paris</option><option value="America/New_York">America/New_York</option><option value="America/Los_Angeles">America/Los_Angeles</option><option value="Australia/Sydney">Australia/Sydney</option></select>
-<div class="row"><div><label for="font">Font style</label><select id="font"><option value="Georgia,serif">Elegant Serif</option><option value="'Times New Roman',serif">Classic Times</option><option value="Arial,sans-serif">Modern Sans Serif</option><option value="'Trebuchet MS',sans-serif">Clean Contemporary</option><option value="cursive">Romantic Script (system font)</option></select></div><div><label for="layout">Countdown style</label><select id="layout"><option value="minimal" selected>Minimal (recommended)</option><option value="editorial">Editorial</option><option value="boxed">Boxed</option></select></div></div>
-<div class="row"><div><label for="color">Text color</label><input id="color" type="color" value="#3b211c"></div><div><label for="background">Background color</label><input id="background" type="color" value="#ffffff"></div></div>
+<div class="row"><div><label for="font">Font style</label><select id="font"><option value="serif">Elegant Serif</option><option value="times">Classic Times</option><option value="sans">Modern Sans Serif</option><option value="trebuchet">Clean Contemporary</option><option value="script">Romantic Script (system font)</option></select></div><div><label for="layout">Countdown style</label><select id="layout"><option value="minimal" selected>Minimal (recommended)</option><option value="editorial">Editorial</option><option value="boxed">Boxed</option></select></div></div>
+<div class="row"><div><label for="color">Text color</label><input id="color" type="color" value="#3b211c"></div><div><label for="background">Background color (creator preview only)</label><input id="background" type="color" value="#ffffff"></div></div>
 <label style="display:flex;align-items:center;gap:8px"><input id="transparent" type="checkbox" checked style="width:auto"> Transparent background (for Canva)</label>
 <button class="btn" id="create">Create my countdown link</button>
-<section id="preview"><h2 id="previewTitle" style="display:none">The Wedding Day</h2><div id="timer"><div class="unit"><div class="num">00</div><div class="lbl">DAYS</div></div><div class="unit"><div class="num">00</div><div class="lbl">HOURS</div></div><div class="unit"><div class="num">00</div><div class="lbl">MINUTES</div></div><div class="unit"><div class="num">00</div><div class="lbl">SECONDS</div></div></div></section>
-<div id="result"><strong>Your Canva-compatible countdown link</strong><a id="link" target="_blank" rel="noopener"></a><button class="btn" id="copy">Copy link</button><button class="btn" id="open" type="button">Open countdown</button><p class="note">The live countdown is hosted by count.live so Canva can embed it. Count.live does not document a URL option for transparent background. To use transparency: open this link, enable “Transparent background” in Styling on count.live, then click count.live’s “Copy link” and paste that copied link into Canva. If you leave transparency off, this creator includes your selected background color in the link.</p></div>
+</section>
+<section id="preview"><h2 id="previewTitle" style="display:none">The Wedding Day</h2><div id="timer"><div class="unit"><div class="num">00</div><div class="lbl">DAYS</div></div><div class="sep">:</div><div class="unit"><div class="num">00</div><div class="lbl">HOURS</div></div><div class="sep">:</div><div class="unit"><div class="num">00</div><div class="lbl">MINUTES</div></div><div class="sep">:</div><div class="unit"><div class="num">00</div><div class="lbl">SECONDS</div></div></div></section>
+<div id="result"><strong>Your transparent Canva countdown link</strong><a id="link" target="_blank" rel="noopener"></a><button class="btn" id="copy">Copy link</button><button class="btn" id="open" type="button">Open countdown</button><p class="note">Use this link in Canva → Apps → Embed. This is our own countdown page, not Count.live. Its background is transparent and it has no branding badge.</p></div>
 </main>
 <script>
 const $=id=>document.getElementById(id);let target=null,iv=null;
-function applyStyle(){document.documentElement.style.setProperty('--ink',$('color').value);document.documentElement.style.setProperty('--paper',$('transparent').checked?'transparent':$('background').value);$('previewTitle').style.fontFamily=$('font').value;$('previewTitle').style.display=$('showTitle').checked?'block':'none';let s=$('layout').value;document.getElementById('preview').style.borderTop=s==='minimal'?'0':'1px solid #e5dfd4';document.getElementById('preview').style.background=$('transparent').checked?'transparent':$('background').value;document.getElementById('preview').style.border=s==='boxed'?'1px solid #ded6c8':'0';document.getElementById('preview').style.padding=s==='minimal'?'12px 10px':'22px 10px';}
-function buildUrl(){const p=new URLSearchParams({date:$('date').value+'T'+($('time').value||'00:00')+':00',tz:$('tz').value,fg:$('color').value.replace('#',''),font:$('font').value.includes('Arial')?'sans':'serif',theme:$('layout').value==='boxed'?'light':$('layout').value==='minimal'?'dark':'light',units:'d,h,m,s',embed:'1'});if($('showTitle').checked&&$('title').value.trim())p.set('title',$('title').value.trim());p.set('bg',$('transparent').checked?'transparent':$('background').value.replace('#',''));return 'https://count.live/?'+p.toString()}
-function draw(){if(target===null)return;let d=Math.max(0,target-Date.now()),v=[Math.floor(d/86400000),Math.floor(d%86400000/3600000),Math.floor(d%3600000/60000),Math.floor(d%60000/1000)];$('timer').innerHTML=v.map((n,i)=>`${i?'<div class="sep">:</div>':''}<div class="unit"><div class="num">${String(n).padStart(2,'0')}</div><div class="lbl">${['DAYS','HOURS','MINUTES','SECONDS'][i]}</div></div>`).join('')}
-function make(){if(!$('date').value){alert('Please choose the wedding date.');return}target=new Date($('date').value+'T'+($('time').value||'00:00')+':00').getTime();$('previewTitle').textContent=$('title').value||'The Wedding Day';applyStyle();$('result').style.display='block';$('link').href=buildUrl();$('link').textContent=buildUrl();draw();if(iv)clearInterval(iv);iv=setInterval(draw,1000)}
-['title','showTitle','font','layout','color','background','transparent'].forEach(k=>$(k).addEventListener('input',()=>{ $('previewTitle').textContent=$('title').value||'The Wedding Day';applyStyle()}));
-$('create').addEventListener('click',make);$('copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('link').href);$('copy').textContent='Copied!'}catch(e){prompt('Copy this link',$('link').href)}});
-$('open').addEventListener('click',()=>window.open($('link').href,'_blank','noopener'));const q=new URLSearchParams(location.search);['date','time','tz','title','font','layout','color','background'].forEach(k=>{if(q.has(k))$(k).value=q.get(k)});applyStyle();if(q.has('date'))make();
+const fontMap={serif:'Georgia,serif',times:"'Times New Roman',serif",sans:'Arial,sans-serif',trebuchet:"'Trebuchet MS',sans-serif",script:'cursive'};
+function applyStyle(){document.documentElement.style.setProperty('--ink',$('color').value);document.documentElement.style.setProperty('--paper',$('transparent').checked?'transparent':$('background').value);$('previewTitle').style.fontFamily=fontMap[$('font').value]||fontMap.serif;$('previewTitle').style.display=$('showTitle').checked?'block':'none';const s=$('layout').value;$('preview').style.borderTop=s==='minimal'?'0':'1px solid #e5dfd4';$('preview').style.background=$('transparent').checked?'transparent':$('background').value;$('preview').style.border=s==='boxed'?'1px solid #ded6c8':'0';$('preview').style.padding=s==='minimal'?'12px 10px':'22px 10px';document.querySelectorAll('.num').forEach(el=>el.style.fontFamily=fontMap[$('font').value]||fontMap.serif);document.querySelectorAll('.lbl').forEach(el=>el.style.fontFamily=fontMap[$('font').value]||fontMap.serif);}
+function zonedTimestamp(date,time,tz){const [y,m,d]=date.split('-').map(Number),[hh,mm]=((time||'00:00').split(':')).map(Number);const desired=Date.UTC(y,m-1,d,hh,mm,0);let guess=desired;for(let i=0;i<3;i++){const parts=new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(new Date(guess));const o={};parts.forEach(p=>o[p.type]=p.value);const represented=Date.UTC(+o.year,+o.month-1,+o.day,+o.hour,+o.minute,+o.second);guess+=desired-represented;}return guess;}
+function buildUrl(){const p=new URLSearchParams({view:'1',date:$('date').value,time:$('time').value||'00:00',tz:$('tz').value,fg:$('color').value.slice(1),font:$('font').value,layout:$('layout').value});if($('showTitle').checked&&$('title').value.trim())p.set('title',$('title').value.trim());return location.origin+location.pathname+'?'+p.toString();}
+function draw(){if(target===null)return;let d=Math.max(0,target-Date.now()),v=[Math.floor(d/86400000),Math.floor(d%86400000/3600000),Math.floor(d%3600000/60000),Math.floor(d%60000/1000)];$('timer').innerHTML=v.map((n,i)=>`${i?'<div class="sep">:</div>':''}<div class="unit"><div class="num">${String(n).padStart(2,'0')}</div><div class="lbl">${['DAYS','HOURS','MINUTES','SECONDS'][i]}</div></div>`).join('');document.querySelectorAll('.num,.lbl').forEach(el=>el.style.fontFamily=fontMap[$('font').value]||fontMap.serif);}
+function make(){if(!$('date').value){alert('Please choose the wedding date.');return}target=zonedTimestamp($('date').value,$('time').value,$('tz').value);$('previewTitle').textContent=$('title').value||'The Wedding Day';applyStyle();$('result').style.display='block';$('link').href=buildUrl();$('link').textContent=buildUrl();draw();if(iv)clearInterval(iv);iv=setInterval(draw,1000)}
+['title','showTitle','font','layout','color','background','transparent'].forEach(k=>$(k).addEventListener('input',()=>{$('previewTitle').textContent=$('title').value||'The Wedding Day';applyStyle()}));
+$('create').addEventListener('click',make);$('copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('link').href);$('copy').textContent='Copied!'}catch(e){prompt('Copy this link',$('link').href)}});$('open').addEventListener('click',()=>window.open($('link').href,'_blank','noopener'));
+const q=new URLSearchParams(location.search);
+if(q.get('view')==='1'){
+ document.documentElement.classList.add('countdown-view');document.body.classList.add('countdown-view');
+ $('creator').style.display='none';$('result').style.display='none';
+ const date=q.get('date')||'';const time=q.get('time')||'16:00';const tz=q.get('tz')||'Europe/Istanbul';const color='#'+(q.get('fg')||'3b211c').replace('#','');
+ $('date').value=date;$('time').value=time;$('tz').value=tz;$('color').value=color;$('font').value=q.get('font')||'serif';$('layout').value=q.get('layout')||'minimal';
+ $('title').value=q.get('title')||'';$('showTitle').checked=!!q.get('title');$('previewTitle').textContent=$('title').value;$('previewTitle').style.display=$('showTitle').checked?'block':'none';
+ document.documentElement.style.setProperty('--ink',color);document.body.style.background='transparent';$('preview').style.background='transparent';$('preview').style.border='0';$('preview').style.padding='8px 0';$('preview').style.margin='0';$('previewTitle').style.fontFamily=fontMap[$('font').value]||fontMap.serif;
+ if(date){target=zonedTimestamp(date,time,tz);draw();iv=setInterval(draw,1000)}
+}else{['date','time','tz','title','font','layout','color','background'].forEach(k=>{if(q.has(k))$(k).value=q.get(k)});applyStyle();if(q.has('date'))make()}
 </script></body></html>
